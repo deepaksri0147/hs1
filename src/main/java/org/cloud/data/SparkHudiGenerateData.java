@@ -12,8 +12,15 @@ import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
 import org.apache.spark.sql.SaveMode;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,11 +30,12 @@ import static org.apache.hudi.keygen.constant.KeyGeneratorOptions.PARTITIONPATH_
 public class SparkHudiGenerateData {
 
 
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws IOException, URISyntaxException {
         long startTime = System.currentTimeMillis();
         String storageAccountName = "test1datalakestoragegen2";
         String storageAccountKey = "3K/fWSAN7/PJNPr7qBcH5idJfu8W96ISGXpbg8+i2vAYWR+D1LKZhVeEyuIIhEaXiOjXt9Osc9py+AStV4xdQw==";
-
+        CsvMapping csvMapping = new CsvMapping();
 
         SparkConf sparkConf = new SparkConf()
                 .setAppName("Example Spark App")
@@ -46,122 +54,60 @@ public class SparkHudiGenerateData {
         SparkSession spark = SparkSession.builder().appName("Example Spark App").config(sparkConf).getOrCreate();
 
 
-        String mappingId = "660c21352039b8009bae8fcd";
+//        String mappingId = "660c21352039b8009bae8fcd";
+        String mappingId =  "660e89353b4a9e4855a3ba63";
         String tenantIdtoken = "Bearer_eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZmOGYxNjhmLTNmZjYtNDZlMi1iMTJlLWE2YTdlN2Y2YTY5MCJ9.eyJwcm9maWxlVXJsIjoid3d3Lmdvb2dsZS5jb20vcHJvZmlsZS9waWMiLCJyZWNlbnRfc2Vzc2lvbiI6Ik5BIiwic3ViIjoiZ2FpYW4uY29tIiwicGFyZW50VGVuYW50SWQiOiJOQSIsImNvbG9yIjoiNjFkYWRjNGE3ZGI1NGRmMThlZDYzMzBhMWJhODJkZjYiLCJ1c2VyX25hbWUiOiJ0ZW5hbnRfdXNlcm5hbWUiLCJpc3MiOiJnYWlhbi5jb20iLCJpc0FkbWluIjp0cnVlLCJwbGF0Zm9ybUlkIjoiNjA0Nzg5ZWI0MmI3ZGMwMDAxN2E4MzQxIiwidXNlck5hbWUiOiJ0ZW5hbnRfdXNlcm5hbWUiLCJhdXRob3JpdGllcyI6WyJST0xFX01BUktFVFBMQUNFX1VTRVIiXSwiY2xpZW50X2lkIjoiZ2FpYW4iLCJzY29wZSI6WyJ0cnVzdCIsInJlYWQiLCJ3cml0ZSJdLCJ0ZW5hbnRJZCI6IjY0ZTFmZDNkMTQ0M2ViMDAwMThjYzIzMSIsImxvZ28iOiJ3d3cuZ29vZ2xlLmNvbS90ZW5hbnQvbG9nby9waWMucG5nIiwiZXhwIjoxNzA4MDI1NDIyLCJqdGkiOiI4ZDVmMjRkZS0wYWE4LTQ5ZjgtYWJjNS1jZjlhM2ViNmM5YmMiLCJlbWFpbCI6ImFwcHNAZ2FpYW5zb2x1dGlvbnMuY29tIn0.GykRloS1hNKe95XL2S56CrQDSxAG8uJ8GDEcKr892__CyhWGMFU5x2jaOuX71XkvHamV5cURNZQid5183G6163JJsIHY4EU6Ce7_KRtSFCBQl6XbUbfi1qzl3EWbvuvo0c6kJtHFoWm56jTX_6NGT9xmovufxtXhiW80DvxlV6zM6LAizYXwkhdOwGulNcKUe3mjR4v4StiIlUwv0fgYPY5DYNbU8fT9Z_U4RqOOeB8HBwqOQNFKSlZujQNlEcrvVlbxmDlCIoT9hV8kaY4o4_3RMbVYUqeNn8I-jKTj0GfhTWaFCr3VTaGvjzTABFJHTO_zLTETus299wAW22zZsQ";
-       // MappingDto mappingDto;
+        String transactionId = "c20d08ef-1f5c-4f33-9e34-041207f98c47";
+        MappingDto mappingDto;
+
+//              long start = System.currentTimeMillis();
+
 //        try {
-//            mappingDto = MappingConversion(mappingId,tenantIdtoken);
+//            mappingDto = csvMapping.MappingConversion(mappingId,tenantIdtoken,transactionId);
 //        } catch (Exception e) {
 //            throw new RuntimeException("exception while having the restCall to get the mappingId");
 //        }
+//
+//
+//        System.out.println("size"+mappingDto.getColumnMapping().size());
+//
+//        for (String name: mappingDto.getColumnMapping().keySet()) {
+//            String key = name;
+//            String value = mappingDto.getColumnMapping().get(name);
+//            System.out.println(key + " " + value);
+//        }
+
+        long start = System.currentTimeMillis();
+//        String csvPath = "abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/politicalData.csv";
+
+        String csvPath = "https://ig.aidtaas.com/mobius-content-service/v1.0/content/download/901fd42f-5dbf-4567-a08e-8069d5c18245";
+        BufferedReader br = new BufferedReader(new InputStreamReader(new URI(csvPath).toURL().openStream()));
+
+        // Read the first line from the CSV file
+        String firstLine = br.readLine();
+        // Split the first line into an array of strings based on the comma delimiter
+        String[] columns = firstLine.split(",");
+        // Print the array of column names
+        System.out.println("Column names: " + Arrays.toString(columns));
+
+        // Close the BufferedReader
+        br.close();
 
 
-        StructType schema = new StructType();
-        schema = schema.add("Id", DataTypes.IntegerType, false);
-        schema = schema.add("Name", DataTypes.StringType, false);
-        schema = schema.add("Gender", DataTypes.StringType, false);
-        schema = schema.add("Country", DataTypes.StringType, false);
-        schema = schema.add("Age", DataTypes.IntegerType, false);
+        long end = System.currentTimeMillis();
+        long between = end-start;
+        System.out.println("time taken "+ between);
 
 
-        // Path to CSV file
-//        String csvPath = "file:////Users/deepak/Downloads/hs-1/src/main/resources/b.csv";
-        String csvPath = "abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/10lakhwithoutHeaders.csv";
-//        String csvPath = "https://testmobiusfileshare.blob.core.windows.net/test/_615e8b5397b94d000155448c/GAIAN/Downloads/2ce84101-6c63-476d-9219-1fd4afa7e9f2_$$_V1_TEST.csv";
-
-        // Load CSV file into DataFrame
-        Dataset<Row> data = spark.read()
-                .format("csv")
-                .option("header", "true")
-                .schema(schema)
-                .load(csvPath);
-
-        // Rename column "Name" to "empName" in the dataset
-        Dataset<Row> renamedData = data.withColumnRenamed("Name", "entity.empName");
 
 
-        renamedData.write().format("org.apache.hudi").option(PARTITIONPATH_FIELD_NAME.key(), "Country")
-                .option("hoodie.table.name", "Spark_105")
-                .option(DataSourceWriteOptions.TABLE_TYPE_OPT_KEY(), HoodieTableType.MERGE_ON_READ.name())
-                .mode(SaveMode.Append)
-                .save("abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/Spark_105");
-        System.out.println("Number of lines in file = " + data.count());
-        long endtime = System.currentTimeMillis();
-        long elapsedTime = endtime - startTime;
-        System.out.println("time take to insert is " + elapsedTime);
-        for (String fieldName : renamedData.schema().fieldNames()) {
-            System.out.println("Field Name: " + fieldName);
+
+        System.out.println("sucessfully ran");
+
+
 
 
         }
     }
-}
 
-
-
-
-
-
-
-
-
-
-
-//
-//public static void main(String[] args) {
-////        System.setProperty("hadoop.home.dir", "D:\\sparksetup\\hadoop");
-////        System.setProperty("java.library.path","D:\\sparksetup\\hadoop\\bin");
-//
-//    String storageAccountName = "test1datalakestoragegen2";
-//    String storageAccountKey = "3K/fWSAN7/PJNPr7qBcH5idJfu8W96ISGXpbg8+i2vAYWR+D1LKZhVeEyuIIhEaXiOjXt9Osc9py+AStV4xdQw==";
-//
-//
-//    SparkConf sparkConf = new SparkConf()
-//            .setAppName("Example Spark App")
-////                .setMaster("local[*]")
-//            .setMaster("spark://172.212.74.174:7077")
-//            .set("className", "org.apache.hudi")
-//            .set("hoodie.datasource.write.commit_time_extractor.class", "com.example.EpochTimeCommitExtractor")
-//            .set("spark.sql.hive.convertMetastoreParquet", "false")
-//            .set("spark.serializer","org.apache.spark.serializer.KryoSerializer")
-//            .set("spark.sql.catalog.spark_catalog","org.apache.spark.sql.hudi.catalog.HoodieCatalog")
-//            .set("spark.sql.extensions","org.apache.spark.sql.hudi.HoodieSparkSessionExtension")
-//            .set("spark.kryo.registrator","org.apache.spark.HoodieSparkKryoRegistrar")
-//            .set("spark.sql.warehouse.dir", "/home/gaian/spark-warehouse")
-//            .set("fs.defaultFS", "abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/")
-//            .set("fs.azure.account.key." + storageAccountName + ".dfs.core.windows.net", storageAccountKey);
-//
-//    SparkSession spark = SparkSession.builder().appName("Example Spark App").config(sparkConf).getOrCreate();
-//
-//
-//
-//
-//
-//    StructType structType = new StructType();
-//    structType = structType.add("ts", DataTypes.LongType, false);
-//    structType = structType.add("uuid", DataTypes.StringType, false);
-//    structType = structType.add("rider", DataTypes.StringType, false);
-//    structType = structType.add("driver", DataTypes.StringType, false);
-//    structType = structType.add("fare", DataTypes.DoubleType, false);
-//    structType = structType.add("city", DataTypes.StringType, false);
-//
-//    List<Row> nums = new ArrayList<Row>();
-//    nums.add(RowFactory.create(1695259648187L,"321e26a9-8355-45cc-97c6-c31daf0da310","praveen-A","praveen-K",7.10,"Delhi"));
-//    nums.add(RowFactory.create(1695216138116L,"e21f431c-889d-4015-bc98-59bdce1e331c","kiran-F","kiran-P",10.15,"UP" ));
-//    nums.add(RowFactory.create(1695215998111L,"c31bbe69-8d89-47ea-b4ce-4d224bae4b1a","naveen-J","naveen-T",1050.85,"Shimla"));
-//
-//
-//    Dataset<Row> dataset = spark.createDataFrame(nums, structType);
-//    dataset.write().format("org.apache.hudi").option(PARTITIONPATH_FIELD_NAME.key(),"uuid")
-//            //.option("hoodie.metadata.record.index.enable","true")
-//            //.option("hoodie.index.type","RECORD_INDEX")
-//            //.option("hoodie.metadata.enable","true")
-//            //.option("hoodie.metadata.index.bloom.filter.enable","true")
-//            //.option("hoodie.metadata.index.column.stats.enable","true")
-//            .option("hoodie.table.name","Spark_06")
-//            .option(DataSourceWriteOptions.TABLE_TYPE_OPT_KEY(), HoodieTableType.MERGE_ON_READ.name())
-//            .mode(SaveMode.Append)
-//            .save("abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/Spark_06");
-//    System.out.println("Number of lines in file = " + dataset.count());
-//}
 
