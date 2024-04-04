@@ -56,17 +56,38 @@ public class SparkHudiGenerateData {
 //        }
 
 
-        StructType schema = new StructType();
-        schema = schema.add("Id", DataTypes.IntegerType, false);
-        schema = schema.add("Name", DataTypes.StringType, false);
-        schema = schema.add("Gender", DataTypes.StringType, false);
-        schema = schema.add("Country", DataTypes.StringType, false);
-        schema = schema.add("Age", DataTypes.IntegerType, false);
+        StructType schema = new StructType()
+                .add("precinct", DataTypes.StringType, false)
+                .add("office", DataTypes.StringType, false)
+                .add("partydetailed", DataTypes.StringType, false)
+                .add("partysimplified", DataTypes.StringType, false)
+                .add("mode", DataTypes.StringType, false)
+                .add("votes", DataTypes.IntegerType, false)
+                .add("countyname", DataTypes.StringType, false)
+                .add("countyfips", DataTypes.StringType, false)
+                .add("jurisdictionname", DataTypes.StringType, false)
+                .add("jurisdictionfips", DataTypes.StringType, false)
+                .add("candidate", DataTypes.StringType, false)
+                .add("district", DataTypes.StringType, false)
+                .add("magnitude", DataTypes.StringType, false)
+                .add("dataverse", DataTypes.StringType, false)
+                .add("yearofvote", DataTypes.IntegerType, false)
+                .add("Id", DataTypes.DoubleType, false)
+                .add("stage", DataTypes.StringType, false)
+                .add("state", DataTypes.StringType, false)
+                .add("special", DataTypes.StringType, false)
+                .add("writein", DataTypes.StringType, false)
+                .add("statepo", DataTypes.StringType, false)
+                .add("statefips", DataTypes.StringType, false)
+                .add("statecen", DataTypes.StringType, false)
+                .add("stateic", DataTypes.StringType, false)
+                .add("dateofelection", DataTypes.StringType, false)
+                .add("readmecheck", DataTypes.StringType, false);
 
 
         // Path to CSV file
 //        String csvPath = "file:////Users/deepak/Downloads/hs-1/src/main/resources/b.csv";
-        String csvPath = "abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/10lakhwithoutHeaders.csv";
+        String csvPath = "abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/politicalData.csv";
 //        String csvPath = "https://testmobiusfileshare.blob.core.windows.net/test/_615e8b5397b94d000155448c/GAIAN/Downloads/2ce84101-6c63-476d-9219-1fd4afa7e9f2_$$_V1_TEST.csv";
 
         // Load CSV file into DataFrame
@@ -77,19 +98,19 @@ public class SparkHudiGenerateData {
                 .load(csvPath);
 
         // Rename column "Name" to "empName" in the dataset
-        Dataset<Row> renamedData = data.withColumnRenamed("Name", "entity.empName");
+//        Dataset<Row> renamedData = data.withColumnRenamed("Name", "empName");
 
 
-        renamedData.write().format("org.apache.hudi").option(PARTITIONPATH_FIELD_NAME.key(), "Country")
-                .option("hoodie.table.name", "Spark_105")
+        data.write().format("org.apache.hudi").option(PARTITIONPATH_FIELD_NAME.key(), "state")
+                .option("hoodie.table.name", "Spark_109")
                 .option(DataSourceWriteOptions.TABLE_TYPE_OPT_KEY(), HoodieTableType.MERGE_ON_READ.name())
                 .mode(SaveMode.Append)
-                .save("abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/Spark_105");
+                .save("abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/Spark_109");
         System.out.println("Number of lines in file = " + data.count());
         long endtime = System.currentTimeMillis();
         long elapsedTime = endtime - startTime;
         System.out.println("time take to insert is " + elapsedTime);
-        for (String fieldName : renamedData.schema().fieldNames()) {
+        for (String fieldName : data.schema().fieldNames()) {
             System.out.println("Field Name: " + fieldName);
 
 
