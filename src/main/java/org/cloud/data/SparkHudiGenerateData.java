@@ -5,13 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.hudi.DataSourceWriteOptions;
 import org.apache.hudi.common.model.HoodieTableType;
 import org.apache.spark.SparkConf;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.apache.spark.sql.SaveMode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
@@ -19,10 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.apache.hudi.keygen.constant.KeyGeneratorOptions.PARTITIONPATH_FIELD_NAME;
 
@@ -62,43 +56,136 @@ public class SparkHudiGenerateData {
 
 //              long start = System.currentTimeMillis();
 
-//        try {
-//            mappingDto = csvMapping.MappingConversion(mappingId,tenantIdtoken,transactionId);
-//        } catch (Exception e) {
-//            throw new RuntimeException("exception while having the restCall to get the mappingId");
-//        }
-//
-//
-//        System.out.println("size"+mappingDto.getColumnMapping().size());
-//
-//        for (String name: mappingDto.getColumnMapping().keySet()) {
-//            String key = name;
-//            String value = mappingDto.getColumnMapping().get(name);
-//            System.out.println(key + " " + value);
-//        }
+        try {
+            mappingDto = csvMapping.MappingConversion(mappingId,tenantIdtoken,transactionId);
+        } catch (Exception e) {
+            throw new RuntimeException("exception while having the restCall to get the mappingId");
+        }
+
+
+        System.out.println("size"+mappingDto.getColumnMapping().size());
+
+        for (String name: mappingDto.getColumnMapping().keySet()) {
+            String key = name;
+            String value = mappingDto.getColumnMapping().get(name);
+            System.out.println(key + " " + value);
+        }
 
         long start = System.currentTimeMillis();
-//        String csvPath = "abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/politicalData.csv";
+        String csvPath = "abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/politicalData.csv";
 
-        String csvPath = "https://ig.aidtaas.com/mobius-content-service/v1.0/content/download/901fd42f-5dbf-4567-a08e-8069d5c18245";
-        BufferedReader br = new BufferedReader(new InputStreamReader(new URI(csvPath).toURL().openStream()));
+//        Dataset<Row> firstRow = spark.read()
+//                .format("csv")
+//                .option("header", "true")
+//                .option("inferSchema", "true") // Infer schema to read the first row
+//                .load(csvPath)
+//                .limit(1); // Limit the DataFrame to only the first row
 
-        // Read the first line from the CSV file
-        String firstLine = br.readLine();
-        // Split the first line into an array of strings based on the comma delimiter
-        String[] columns = firstLine.split(",");
-        // Print the array of column names
-        System.out.println("Column names: " + Arrays.toString(columns));
+        // Show the first row
+//        firstRow.show();
+//        String[] columnNames = firstRow.columns();
 
-        // Close the BufferedReader
-        br.close();
+        // Print column names
+//        System.out.println("Column names:");
+//        for (String columnName : columnNames) {
+//            System.out.println(columnName);
+//        }
+
+//        String destinationTable = mappingDto.getTableName();
+//        String destinationTable = "Spark_110";
+//
+//        List<String> mappedFields = Arrays.asList();
+
+
+        // collect the field names of the CSV file
+        String csvUrl = "https://testmobiusfileshare.blob.core.windows.net/test/_615e8b5397b94d000155448c/GAIAN/Downloads/901fd42f-5dbf-4567-a08e-8069d5c18245_$$_V1_TEST.csv";
+        CsvReader csvReader = new CsvReader();
+        List<String> csvHeaderFields = csvReader.getHeaders(csvUrl);
+        System.out.println(csvHeaderFields);
+
+
+
+
+        // collect the field names of the destination table and their types
+        String url = "jdbc:mysql://20.237.110.90:4000/targettingFramework?useSSL=false";
+        String username = "root";
+        String password = "";
+        String tiDBTable = "t_6602c871178a5860c81f7ab9_t";
+
+        // JDBC connection properties
+        java.util.Properties connectionProperties = new java.util.Properties();
+        connectionProperties.put("user", username);
+        connectionProperties.put("password", password);
+
+        HashMap<String , String > destinationFieldDataTypemap = new HashMap<>();
+        try {
+            // Read data from MySQL table into DataFrame
+            Dataset<Row> dataTable = spark.read()
+                    .jdbc(url, tiDBTable, connectionProperties);
+            StructField[] fields = dataTable.schema().fields();
+            for (StructField field : fields) {
+                String columnName = field.name();
+                if (columnName.startsWith("entity.")) {
+                    String columnType = field.dataType().typeName();
+                    String columnNameWithoutPrefix = columnName.substring("entity.".length()); // Remove the prefix
+                    System.out.println(columnNameWithoutPrefix + " : " + columnType);
+                    destinationFieldDataTypemap.put(columnNameWithoutPrefix, columnType);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        //Schema Creation
+        Map<String, String> schemaMap = new HashMap<>();
+        for(String csvField : csvHeaderFields){
+            if(mappingDto.getColumnMapping().containsKey(csvField)){
+                schemaMap.put(csvField, destinationFieldDataTypemap.get(mappingDto.getColumnMapping().get(csvField)));
+            }else{
+                schemaMap.put(csvField, "string");
+            }
+        }
+
+        StructType schema = createSchema(schemaMap);
+
+
+
+        // creating the dataset using the schema
+        Dataset<Row> data = spark.read()
+                .format("csv")
+                .option("header", "true")
+                .schema(schema)
+                .load(csvPath);
+
+
+
+        // renaming the csv column field with the desired destination field name
+//        Dataset<Row> renamedDataSet = data.withColumnRenamed("Name", "empName");
+
+        for (Map.Entry<String, String> entry : mappingDto.getColumnMapping().entrySet()) {
+            data = data.withColumn(entry.getValue(), functions.col(entry.getKey())).drop(entry.getKey());
+        }
+
+
+        //creating the destination column names
+        List<String> destinationFieldNames = new ArrayList<>(destinationFieldDataTypemap.keySet());
+
+
+        //selecting the desired dataset based on destination table
+        Dataset<Row> selectedData = data.select(destinationFieldNames.stream().map(functions::col).toArray(Column[]::new));
+
+        selectedData.write().format("org.apache.hudi").option(PARTITIONPATH_FIELD_NAME.key(), "state")
+                .option("hoodie.table.name", "Spark_109")
+                .option(DataSourceWriteOptions.TABLE_TYPE_OPT_KEY(), HoodieTableType.MERGE_ON_READ.name())
+                .mode(SaveMode.Append)
+                .save("abfs://hudi@test1datalakestoragegen2.dfs.core.windows.net/hudi/deepak/Spark_109");
 
 
         long end = System.currentTimeMillis();
         long between = end-start;
         System.out.println("time taken "+ between);
-
-
 
 
 
@@ -108,6 +195,35 @@ public class SparkHudiGenerateData {
 
 
         }
+
+
+
+    public static StructType createSchema(Map<String, String> map) {
+        StructField[] fields = new StructField[map.size()];
+        int index = 0;
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String fieldName = entry.getKey();
+            String fieldType = entry.getValue();
+            fields[index] = DataTypes.createStructField(fieldName, getDataType(fieldType), false);
+            index++;
+        }
+        return DataTypes.createStructType(fields);
+    }
+
+
+
+    private static org.apache.spark.sql.types.DataType getDataType(String fieldType) {
+        switch (fieldType.toLowerCase()) {
+            case "string":
+                return DataTypes.StringType;
+            case "double":
+                return DataTypes.DoubleType;
+            default:
+                throw new IllegalArgumentException("Unsupported data type: " + fieldType);
+        }
+    }
+
+
     }
 
 
