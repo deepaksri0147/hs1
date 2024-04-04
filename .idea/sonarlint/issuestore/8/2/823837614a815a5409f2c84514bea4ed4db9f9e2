@@ -1,0 +1,28 @@
+
+“	java:S1175"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(±ÆÕÄ8÷²Ã¼ê1J$2f6727ef-809f-4bc9-a22b-7ee335d92907
+
+java:S1854""<Remove this useless assignment to local variable "username".(ñú›µ8³Ã¼ê1J$9afdfef1-dbf8-454f-a07b-93a4aa5f5579
+y
+java:S1854!"7Remove this useless assignment to local variable "url".(Å¼á$8³Ã¼ê1J$5e2e4215-1489-4a65-ace4-dce9e5019622
+€
+java:S1854"8Remove this useless assignment to local variable "time".(é´û¥þÿÿÿÿ8³Ã¼ê1J$c88e7e2d-8a30-477c-ad21-f6ca106fdc83
+´
+java:S1130"lRemove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from method's body.( äöÛùÿÿÿÿ8‚³Ã¼ê1J$aeb6edbb-4575-409d-8741-185f4678768a
+Æ
+java:S1130"~Remove the declaration of thrown exception 'org.json.simple.parser.ParseException', as it cannot be thrown from method's body.( äöÛùÿÿÿÿ8‚³Ã¼ê1J$bb54ad72-a830-410f-ad6b-4e8767954583
+r	java:S106"+Replace this use of System.out by a logger.(ùÄûšþÿÿÿÿ8‚³Ã¼ê1J$3d1d086b-9c10-46f4-a877-54b6f7680e08
+q
+java:S1481")Remove this unused "time" local variable.(é´û¥þÿÿÿÿ8ƒ³Ã¼ê1J$7e1a40b6-e78d-4d94-8b5e-42c29b3ccba1
+ƒ	java:S125"<This block of commented-out lines of code should be removed.(¬¹‘·øÿÿÿÿ8œÅ¼ê1J$df4f3c25-21ef-40da-858d-435ad6f942d1
+~	java:S125"<This block of commented-out lines of code should be removed.(Ö –Ö8œÅ¼ê1J$8b564e56-c7c2-4a30-88d0-4871597cadcf
+j
+java:S1481!"(Remove this unused "url" local variable.(Å¼á$8ƒ³Ã¼ê1J$dd2b6c14-5ee1-45d2-969c-6d0ab540c387
+p
+java:S1481""-Remove this unused "username" local variable.(ñú›µ8ƒ³Ã¼ê1J$6723cc1c-6ac7-41fa-943e-48067d5aa003
+u
+java:S1481#"-Remove this unused "password" local variable.(ˆù©ëúÿÿÿÿ8ƒ³Ã¼ê1J$7c400d52-2118-44c5-bb26-4151254c85e6
+r	java:S106("+Replace this use of System.out by a logger.(èÊÛ›þÿÿÿÿ8ƒ³Ã¼ê1J$d3449b89-5b0f-4930-af62-13ba83691c0e
+ƒ	java:S1253"<This block of commented-out lines of code should be removed.(ãÚÇ§ÿÿÿÿÿ8‰³Ã¼ê1J$d1d41e3e-9262-4bc3-abc1-febdd696a9cd
+ƒ	java:S1257"<This block of commented-out lines of code should be removed.(éØ»Úûÿÿÿÿ8Š³Ã¼ê1J$54024da3-c6fb-4213-a136-b4b7db56a86a
+~	java:S125:"<This block of commented-out lines of code should be removed.(†ùÛ¯8¡Å¼ê1J$ea1070fe-7676-49a5-af92-57e9b40e3d04
+™secrets:S6338&"ZMake sure this Azure Storage Account Key gets revoked, changed, and removed from the code.(³í¥ŠJ$a0f0deca-bf50-4a3f-975f-73c708b40dec

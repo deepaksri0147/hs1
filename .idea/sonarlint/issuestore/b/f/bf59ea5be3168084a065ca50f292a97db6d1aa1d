@@ -1,0 +1,32 @@
+
+‰
+java:S18542"ARemove this useless assignment to local variable "tenantIdtoken".(Éæºûÿÿÿÿ8«ÇÁê1J$7e50d092-a4a8-412a-ae01-20c4d1a1798d
+…
+java:S18541"=Remove this useless assignment to local variable "mappingId".(Ò¼Ó«üÿÿÿÿ8«ÇÁê1J$13021a6b-1cb6-41a5-995a-2e2a26d66170
+v
+java:S14811".Remove this unused "mappingId" local variable.(Ò¼Ó«üÿÿÿÿ8 «ÇÁê1J$42b89ec1-6ef5-45f2-a4cc-d7c2fe03b0f0
+z
+java:S14812"2Remove this unused "tenantIdtoken" local variable.(Éæºûÿÿÿÿ8¡«ÇÁê1J$cd2dc3e8-de2d-4890-a69e-e71be9f8fa2a
+X	java:S1253"<This block of commented-out lines of code should be removed.(İÒÕ8âÄÚÁê1
+„
+java:S1075E"ARefactor your code to get this URI from a customizable parameter.(ş••Ø8üúËÁê1J$38ab3ccf-d0f1-462f-b20f-95c293f5ee3c
+~	java:S125D"<This block of commented-out lines of code should be removed.(ªŸü8Ğ«ÇÁê1J$9e3361f4-b8c0-4420-9831-06d1613dff23
+ƒ	java:S125F"<This block of commented-out lines of code should be removed.(İ–Óÿÿÿÿÿ8üúËÁê1J$d2a0e273-7bb6-4a3d-9c2d-9cd8ac5baf22
+r	java:S106X"+Replace this use of System.out by a logger.(ŸŠ£Ìıÿÿÿÿ8Õ«ÇÁê1J$7eca576d-8ba3-4d32-b7aa-d57463a6f120
+m	java:S106["+Replace this use of System.out by a logger.(€™­8Ø«ÇÁê1J$d6bc6a5c-799b-4b9f-b16d-1111137df373
+m	java:S106]"+Replace this use of System.out by a logger.(Ø»Š8Ø«ÇÁê1J$9640091a-1a65-47b5-9428-baae40f8a810
+ƒ	java:S125o"<This block of commented-out lines of code should be removed.(»•ûÿÿÿÿ8Ù«ÇÁê1J$83cef7e1-5ca4-4f5c-92bf-ea9382d463db
+—
+java:S1128"ORemove this unused import 'com.fasterxml.jackson.core.JsonProcessingException'.(ßÔïÇûÿÿÿÿ8˜šÙÁê1J$5dc8e69c-beac-4aa8-86a1-7120f2b8c242
+‡
+java:S1128"DRemove this unused import 'com.fasterxml.jackson.databind.JsonNode'.(–×ª8˜šÙÁê1J$19a6392d-5168-4a01-b3ca-9d384eac486d
+
+java:S1128"<Remove this unused import 'org.apache.spark.sql.RowFactory'.(Ã÷éâ8˜šÙÁê1J$e45dc0a5-3c69-4529-8986-28b11ba98c18
+s
+java:S1128"0Remove this unused import 'java.util.ArrayList'.(÷‰îƒ8˜šÙÁê1J$010e1a65-34a6-4f4f-a7ac-6c6c10d6acf9
+s
+java:S1128"+Remove this unused import 'java.util.List'.(Õë±Äøÿÿÿÿ8™šÙÁê1J$53541033-660c-45eb-95e7-f2ebd6682b27
+r
+java:S1128"*Remove this unused import 'java.util.Map'.(¼è½Òşÿÿÿÿ8™šÙÁê1J$338a1052-d339-414d-8661-3e721eb9679e
+™secrets:S6338"ZMake sure this Azure Storage Account Key gets revoked, changed, and removed from the code.(³í¥ŠJ$bde17358-66e8-44c2-8579-c40b72264200
+ secrets:S6338t"ZMake sure this Azure Storage Account Key gets revoked, changed, and removed from the code.(›¦Ø‹8ƒÛï¼ê1J$15417e76-7985-4458-a503-e9fd9af20bbf
